@@ -1,8 +1,13 @@
-# Create our first image.
-1: Image
-    $ docker images
+# Docker Course
 
-2: Container (Instanted or Instance of Image)
+Definitions:
+- Image: Pre-built or static package (Like OOP Class)
+- Container: Instantiated instance of an Image (Like OOP Instance)
+
+# Create our first image.
+```
+docker images
+```
 
 Check Version
 $ docker version
@@ -14,64 +19,76 @@ See where all the containers details live
 `var/lib/docker` is where all `images/containers` are stored
 cd `var/lib/docker/containers/<hex>`
 
-Whats Running
-$ docker ps
-
-What has run (With no name passed, it makes up a name)
-$ docker ps -a
-
-Refer to a Container by CONTAINER_ID or NAME
-
-## The actual container images are here:
-ls `/var/lib/docker/image/aufs/imagedb/content/sha256`
-
-# Pull an image
+## Whats Running
 ```
-docker pull ubuntu (would be latest)
-docker pull ubuntu:trusty (Or any tag listed in dockerhub)
+docker ps
 ```
 
-"Container Layers build the docker image"
-
-# Launch container
-(i = interactive, -t = attach to terminal)
-This will launch the container, but not keep it running once we exit
-```
-docker run -it ubuntu:xenial /bin/bash
-```
-
+## What Has Run
+Notice that it will make a random name to re-use an instance that's stopped.
 ```
 docker ps -a
 ```
 
-Grab name name of what we ran, eg 'adoring_einstein'
+## Where Images are Located
+On the system you are running docker look in:
+```
+ls `/var/lib/docker/image/aufs/imagedb/content/sha256`
+```
+
+## Pull an image
+```
+docker pull ubuntu          (would be latest)
+docker pull ubuntu:trusty   (Or any tag listed in dockerhub)
+```
+
+_"Container Layers build the docker image"_
+
+## Launch container
+- `-i`    interactive
+- `-t`    attach to terminal
+- `-d`    detached/daemonized
+
+This will launch the container, but it will not keep running once we exit
+```
+docker run -it ubuntu:xenial /bin/bash
+exit
+```
+
+You can see here after you exit
+```
+docker ps
+docker ps -a    (But it will appear here)
+```
+
+## Relaunch a Container Instance
+Grab name name of what we ran, eg 'adoring_einstein' by doing:
 
 ```
+docker ps -a                    (Look for the friendly name)
 docker restart adoring_einstein
 docker ps
 docker attach adoring_einstein  (Logs us in)
 ```
 
-## Keep the container running in Background
-(disconnected/daemonized)
-
+## Keep the Container running in Background
 ```
 docker run -itd ubuntu:xenial /bin/bash
 ```
 
 #### Run another Instance
-
+If you make changes to instance one, instance two is not affected.
 ```
 docker run -itd ubuntu:xenial /bin/bash
 ```
 
-## Info about the Base image
+## Get Base Image Info
 ```
 docker inspect ubuntu:xenial
-docker ps  (See the different names)
+docker ps  (See the different names if you launched two)
 ```
 
-## Info about Container
+## Get Container Info
 ```
 docker ps -a
 docker inspect compassionate_bhaskara
@@ -79,7 +96,6 @@ docker inspect compassionate_bhaskara | grep IP
 ```
 
 ## Going into container
-
 ```
 docker attach compassionate_bhaskara
 <Enter>
@@ -91,7 +107,7 @@ docker stop <name>
 docker ps -a
 ```
 
-## Searching for containers
+## Searching for Images
 ```
 docker search ruby
 docker search training/sinatra
