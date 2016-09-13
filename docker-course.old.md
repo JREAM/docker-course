@@ -381,7 +381,7 @@ docker run centos7/entry:v1                               ; Outputs default CMD
     - `CMD` - CAN be overwritten for a command, eg: in an echo example above
 
 # Dockerfile Directive: EXPOSE
-Dir: `buids/ApacheInstallation`
+Dir: `buids/06_ApacheInstallation`
 
 - Commands
     - `-P` is to run/remap any ports in the container
@@ -434,7 +434,7 @@ docker ps
 ```
 
 # Container Volume Management
-Dir: `buids/MyHostDir`
+Dir: `buids/07_MyHostDir`
 
 - Volumes:
     - Mounts
