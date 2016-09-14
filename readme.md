@@ -1056,17 +1056,113 @@ docker login --user="user" --password="12345" http://optional.server
 ##Building a Web Farm for Development and Testing - Part 1
 [(Back to Top)](#table-of-contents)
 
-Coming
+```
+docker pull centos:centos6
+docker run -it centos:centos6 /bin/bash
+
+yum install wget
+wget https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+rpm -Uvh epel-release-6-8.noarch.rpm
+yum update
+
+yum install which sudo httpd php openssh-server
+which service   ; /sbin/service
+```
+
+Autostart applications (This is kinda odd)
+```
+...
+...
+vi ~/.bashrc
+
+# Add services we want to start (This is wrong)
+/sbin/services httpd start
+/sbin/services openssh-server start
+```
+
+Copy the container ID from `root@4f832af4d240`, or whatever it is.
+
+```
+docker commit 4f832af4d240 centos6:baseweb
+docker images
+
+docker run -it centos6:baseweb /bin/bash
+```
+
+There is an error, so we are going to remove the box and rather than start from scratch use the same instance we ran, in this case `4f832af4d240`.
+
+```
+docker start 4f832af4d240
+docker attach 4f832af4d240
+vim ~/.bashrc
+
+Change:
+service httpd start
+service shhd start
+
+exit
+```
+
+Resave the image
+docker commit 4f832af4d240 centos6:baseweb
+docker run -it centos6:baseweb /bin/bash
 
 ##Building a Web Farm for Development and Testing - Part 2
 [(Back to Top)](#table-of-contents)
 
-Coming
+- Made a `docker` folder
+    - made a `dockerwww` folder
+    - Copied a silly `oswd.org` template
+
+```
+docker run --name=webtest -it centos6:baseweb /bin/bash
+exit
+docker rm webtest
+```
+
+Try mounting
+```
+docker run --name=webtest -v ~/docker-course/docker/dockerwww:/var/www/html -it centos6:baseweb /bin/bash
+exit
+```
+
+We could use `dockerwww` as a git repository.
+
+```
+docker start webtest
+docker attach webtest
+ps aux | grep httpd  ; make sure apache running
+ifconfig  ; see the ip
+df -h  ; see /var/www/html is there
+```
 
 ##Building a Web Farm for Development and Testing - Part 3
 [(Back to Top)](#table-of-contents)
 
-Coming
+Commit to create a new image to base off.
+```
+docker ps -a
+docker commit webtest centos6:serverv1
+```
+
+Files don't mount obviously since we ran it from a command line and inherit the configuration, nor have we run from a Dockerfile.
+```
+docker run -it centos6:serverv1 /bin/bash
+ps aux | grep httpd
+df -h ;
+```
+
+Port it up
+```
+docker run --name=externalweb -p 8081:80  -it -v ~/docker-course/docker/dockerwww:/var/www/html centos6:serverv1 /bin/bash
+```
+
+New terminal, then web browser
+```
+ifconfig   ; ens33
+http://192.168.88.133:8081
+http://localhost:8081
+```
 
 ##Building a Web Farm for Development and Testing - Part 4
 [(Back to Top)](#table-of-contents)
