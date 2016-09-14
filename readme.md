@@ -827,40 +827,204 @@ docker ps
 ```
 
 ## Docker Events
-Coming
+Have three terminals open.
+```
+docker run -itd --name c1 ubuntu:xenial /bin/bash
+docker run -itd --name c2 ubuntu:xenial /bin/bash
+docker run -itd --name c3 ubuntu:xenial /bin/bash
+```
+
+#### See Events and Listen
+In another terminal run
+```
+docker events --since '1h'
+```
+
+In a third terminal run
+```
+docker events
+```
+
+Run this in the first terminal
+```
+docker exec -it c1 /bin/bash
+```
+
+This will show the event shutdown
+```
+docker attach c1
+exit        (See log terminal)
+```
+
+#### Filters
+
+```
+docker events -f   (shorthand)
+docker events --filter=(event, container, image, label, type, volume, network, daemon)
+```
+
+```
+docker events --filter event=attach
+docker attach c3    (See log terminal)
+```
+
+#### Multiple Filters
+Note: exiting `-it` mode will cause a die event.
+```
+docker events --filter event=attach --filter event=die --filter event=stop
+
+docker stop c3
+```
 
 ## Managing and Removing Base Images
-Coming
+If you have a container which based upon a base image,
+it will have a conflict and you should remove the container first.
+```
+docker images
+docker run -it ubuntu:xenial /bin/bash
+exit
+
+docker rmi ubuntu:xenial
+
+Error response from daemon: conflict: unable to remove repository reference "ubuntu:xenial" (must force) - container 7607e77c270a is using its referenced image bd3d4369aebc
+```
+
+You can force remove a container base image, and restart
+the container.
+```
+docker rmi -f ubuntu:xenial
+```
+
+If a container has multiple references with the same Repository, you must use `-f`
+```
+docker rmi -f centos7/java8
+```
+
 ## Saving and Loading Docker Images
-Coming
+We can tar a file and save it, and load it later without having to back it up to a repository
+
+```
+docker pull centos:latest
+docker run -it centos:latest /bin/bash
+exit
+docker ps -a           (Find the last run container at top)
+```
+
+#### Save an Image to File
+```
+docker commit romantic_mestorf centos:mine
+docker rm romantic_mestorf
+docker images
+
+These will all do the same thing:
+---------------------------------
+docker save centos:latest > centos.latest.tar
+docker save -o centos.latest.tar centos:latest
+docker save --output centos.latest.tar centos:latest
+``
+
+#### More Compression
+```
+tar tvf centos.latest.tar
+
+; To save disk space:
+gzip centos.latest.tar  (200mb to 70mb)
+```
+
+#### Load the Saved File
+Restore the image
+```
+docker load --input centos.latest.tar.gz
+docker images
+```
+
 ## Image History
-Coming
+Let's us see the details of the build, only available on images and not containers.
+```
+docker history centos:mine
+docker history --no-trunc centos:mine
+docker history --quiet nginx
+docker history --quiet --no-trunc nginx
+```
+
 ## Taking Control of Our Tags
-Coming
+Tagging an Image will share the same Image ID.
+```
+docker tag 4efb2fcdb1ab mine/centos:v1.0
+docker tag mine/centos:v1.0 imboyus.server/centos:v1.0.1b
+```
+
 ## Pushing to DockerHub
-Coming
+
+- Head over to [DockerHub](http://dockerhub.com)
+- Has same naming conventions as Git, eg (jream/name)
+- Create a Repository, make it Private
+    - Public repositories don't require a login
+- Everything will be empty
+
+To get into DockerHub from terminal
+```
+docker login
+docker logout
+```
+
+Create an image and push it
+```
+docker tag ubuntu:xenial jream/myubuntu
+docker login
+docker push jream/myubuntu
+```
+
+```
+docker rmi jream/myubuntu
+docker pull jream/myubuntu
+```
+
+#### Shorthand Login
+```
+docker login -u="user" -p="12345"
+docker login --user="user" --password="12345"
+
+; Optional Server besides DockerHub
+docker login --user="user" --password="12345" http://optional.server
+```
 
 # Integration and use Cases
 ---
 
 ## Building a Web Farm for Development and Testing - Prerequisites
-Coming
+
+- Working Locally
+- Git
+- Modem/Network Routing
+- `ifconfig` - get the Ethernet or WAN inet addr
+- Nginx Proxy Load Balancer on Multiple Nodes
+- Host Multiple Domains over Multiple Ports
+
 ## Building a Web Farm for Development and Testing - Part 1
 Coming
+
 ## Building a Web Farm for Development and Testing - Part 2
 Coming
+
 ## Building a Web Farm for Development and Testing - Part 3
 Coming
+
 ## Building a Web Farm for Development and Testing - Part 4
 Coming
+
 ## Integrating Custom Network in Your Docker Containers
 Coming
+
 ## Testing Version Compatibility - Using Tomcat and Java - Prerequisites
 Coming
+
 ## Testing Version Compatibility - Using Tomcat and Java - Part 1
 Coming
+
 ## Testing Version Compatibility - Using Tomcat and Java - Part 2
 Coming
+
 ## Testing Version Compatibility - Using Tomcat and Java - Part 3
 Coming
 
