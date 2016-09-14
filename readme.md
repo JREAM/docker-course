@@ -7,39 +7,39 @@ These are course notes I'm taking to remember things.
     - [Docker Architecture](#)
     - [Docker Installation](#)
     - [Creating our First Image](#creating-our-first-image)
-- [The Dockerfile, Builds and Network Configuration](#)
-    - [Dockerfile Directives: User and Run](#)
-    - [Dockerfile Directives: RUN Order of Execution](#)
-    - [Dockerfile Directives: ENV](#)
-    - [Dockerfile Directives: CMD Vs Run](#)
-    - [Dockerfile Directives: ENTRYPOINT](#)
-    - [Dockerfile Directives: EXPOSE](#)
-    - [Container Volume Management](#)
-    - [Docker Network: List and Inspect](#)
-    - [Docker Network: Create and Remove](#)
-    - [Docker Network: Assign to Containers](#)
-- [Docker Commands and Structures](#)
-    - [Inspect Container Processes](#)
-    - [Previous Container Management](#)
-    - [Controlling Port Exposure on Containers](#)
-    - [Naming our Containers](#)
-    - [Docker Events](#)
-    - [Managing and Removing Base Images](#)
-    - [Saving and Loading Docker Images](#)
-    - [Image History](#)
-    - [Taking Control of Our Tags](#)
-    - [Pushing to DockerHub](#)
-- [Integration and use Cases](#)
-    - [Building a Web Farm for Development and Testing - Prerequisites](#)
-    - [Building a Web Farm for Development and Testing - Part 1](#)
-    - [Building a Web Farm for Development and Testing - Part 2](#)
-    - [Building a Web Farm for Development and Testing - Part 3](#)
-    - [Building a Web Farm for Development and Testing - Part 4](#)
-    - [Integrating Custom Network in Your Docker Containers](#)
-    - [Testing Version Compatibility - Using Tomcat and Java - Prerequisites](#)
-    - [Testing Version Compatibility - Using Tomcat and Java - Part 1](#)
-    - [Testing Version Compatibility - Using Tomcat and Java - Part 2](#)
-    - [Testing Version Compatibility - Using Tomcat and Java - Part 3](#)
+- [The Dockerfile, Builds and Network Configuration](#the-dockerfile-builds-and-network-configuration)
+    - [Dockerfile Directives: User and Run](#dockerfile-directives-user-and-run)
+    - [Dockerfile Directives: RUN Order of Execution](#dockerfile-directives-run-order-of-execution)
+    - [Dockerfile Directives: ENV](#dockerfile-directives-end)
+    - [Dockerfile Directives: CMD Vs Run](#dockerfile-directives-cmd-vs-run)
+    - [Dockerfile Directives: ENTRYPOINT](#dockerfile-directives-entrypoint)
+    - [Dockerfile Directives: EXPOSE](#dockerfile-directives-expose)
+    - [Container Volume Management](#container-volume-management)
+    - [Docker Network: List and Inspect](#docker-network-list-and-inspect)
+    - [Docker Network: Create and Remove](#docker-network-create-and-remove)
+    - [Docker Network: Assign to Containers](#docker-network-assign-to-containers)
+- [Docker Commands and Structures](#docker-commands-and-structures)
+    - [Inspect Container Processes](#inspect-container-processes)
+    - [Previous Container Management](#previous-container-management)
+    - [Controlling Port Exposure on Containers](#controlling-port-exposure-on-containers)
+    - [Naming our Containers](#naming-our-containers)
+    - [Docker Events](#docker-events)
+    - [Managing and Removing Base Images](#managing-and-removing-base-images)
+    - [Saving and Loading Docker Images](#saving-and-loading-docker-images)
+    - [Image History](#image-history)
+    - [Taking Control of Our Tags](#taking-control-of-our-tags)
+    - [Pushing to DockerHub](#pushing-to-dockerhub)
+- [Integration and use Cases](#integration-and-use-cases)
+    - [Building a Web Farm for Development and Testing - Prerequisites](#building-a-web-farm-for-development-and-testing-prerequisites)
+    - [Building a Web Farm for Development and Testing - Part 1](#building-a-web-farm-for-development-and-testing-part-1)
+    - [Building a Web Farm for Development and Testing - Part 2](#building-a-web-farm-for-development-and-testing-part-2)
+    - [Building a Web Farm for Development and Testing - Part 3](#building-a-web-farm-for-development-and-testing-part-3)
+    - [Building a Web Farm for Development and Testing - Part 4](#building-a-web-farm-for-development-and-testing-part-4)
+    - [Integrating Custom Network in Your Docker Containers](#integrating-custom-network-in-your-docker-containers)
+    - [Testing Version Compatibility - Using Tomcat and Java - Prerequisites](#testing-versionccompatibility-using-tomcat-and-java-prerequisites)
+    - [Testing Version Compatibility - Using Tomcat and Java - Part 1](#testing-version-compatibility-using-tomcat-and-java-part-1)
+    - [Testing Version Compatibility - Using Tomcat and Java - Part 2](#testing-version-compatibility-using-tomcat-and-java-part-2)
+    - [Testing Version Compatibility - Using Tomcat and Java - Part 3](#testing-version-compatibility-using-tomcat-and-java-part-3)
 
 
 # Learning the Basics of Docker
@@ -691,15 +691,144 @@ a static IP.
 ---
 
 ## Inspect Container Processes
-Coming
+A one time view of what's in top:
+```
+docker top compassionate_cori
+```
+
+Get in the box and rather than `attach` this will not close the system when running
+```
+docker exec -it compassionate_cori /bin/bash
+top
+```
+
+With two terminals we can monitor in real-time:
+```
+docker stats compassionate_cori
+```
+
 ## Previous Container Management
-Coming
+See only the ID's of containers
+```
+docker ps -a -q
+```
+
+See how many images there are
+```
+docker ps -a -q  | wc -l
+```
+#### Remove a running container
+```
+docker run zen_goldberg
+docker ps
+; See we can interact
+docker exec zen_goldberg /bin/cat /etc/profile
+
+docker rm -f zen_goldberg
+```
+
+#### Remove all containers that have run
+There is no command to remove all docker containers.  Yet, we can do this:
+```
+docker rm `sudo docker ps -a -q`
+```
+
+#### Stop Docker and Remove Container files
+```
+sudo systemctl stop docker
+cd /var/lib/docker/containers
+rm -rf <hash>
+sudo systemctl restart docker
+```
+
+When the hash folder (`config`) is missing for an existing package docker won't run it.
+
+
 ## Controlling Port Exposure on Containers
-Coming
+Run in disconnected mode
+```
+docker run -itd nginx:latest
+docker ps  (80 and 443 are exposed, but not forwarded)
+
+; Get the IP
+docker inspect trusting_volhard | grep IP
+```
+
+Run with the ports remapped locally
+```
+docker run -itd -p 8080 nginx:latest
+docker ps  (8080 is mapped)
+elinks http://172.17.0.2
+
+docker ps
+docker stop drunk_carson
+```
+
+Expose ports nicely
+```
+docker run -itd -p 8080:80 nginx:latest
+elinks http://localhost:8080
+elinks http://172.17.0.2
+```
+
+Expose unlimited ports with `-p`
+```
+docker run -itd -p 8080:80 -p 8443:443 nginx:latest
+```
+
+Expose all ports with `-P`
+```
+docker run -itd -P nginx:latest  (Exposes all ports)
+docker inspect big_leavitt | grep IP
+docker ps (See what ports were assigned)
+
+elinks http://172.17.0.3
+elinks http://localhost:32770
+```
+
+Bind only to local port (The IP from inspect wont work in this case)
+```
+docker run -itd -p 127.0.0.1:8081:80 nginx:latest
+docker ps
+elinks http://127.0.0.1:8081
+```
+
+Bind to UDP only option (TCP Default)
+```
+docker run -itd -p 127.0.0.1:8081:80/udp nginx:latest
+```
+
 ## Naming our Containers
-Coming
+Rather than let docker daemon make `container names` we can control them nicer.
+
+- Image names are always lowercase
+- Container names are generally lowercase
+    - No spacing, or special characters, Allowed are dash(`-`) and underscore(`_`)
+
+```
+docker run -itd --name mycontainername ubuntu:xenial /bin/bash
+docker ps
+```
+
+#### Rename a Previously run container
+```
+docker ps -a
+docker rename trusting_volhard myrenamedcontainer
+docker rename <hash-id> newnamehere
+```
+
+You cannot change the `container id`, nor should you want to.
+
+#### Rename running containers
+```
+docker ps
+docker rename lonely_colden superman
+docker ps
+```
+
 ## Docker Events
 Coming
+
 ## Managing and Removing Base Images
 Coming
 ## Saving and Loading Docker Images
