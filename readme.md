@@ -591,7 +591,7 @@ Get Details about a network:
 docker network inspect bridge
 
 Outputs:
-
+```
 [
     {
         "Name": "bridge",
@@ -1247,10 +1247,18 @@ Modifying our Internal Network (10.10.100.1 Entry Point)
 ip link add br10 type bridge
 ip addr add 10.10.100.1/24 dev br10
 ip link set br10 up
-
-To Remove:
 ```
+
+Misc Options
+```
+# Disable
+ip link set br10 down
+
+# Remove
 ip addr del 10.10.100.1/24 dev br10
+
+# Check Route
+ip route show
 ```
 
 ##Testing Version Compatibility - Using Tomcat and Java - Prerequisites
