@@ -2,9 +2,10 @@
 These are course notes I'm taking. I am using Ubuntu Xenial for development.
 
 # Table of Contents
+
 - [Learning The Basics of Docker](#learning-the-basics-of-docker)
     - [Introduction to Docker](#introduction-to-docker)
-    - [Containers vs VirtualMachines](#containers vs virtualmachines)
+    - [Containers vs VirtualMachines](#containers-vs-virtualmachines)
     - [Docker Architecture](#docker-architecture)
     - [Docker Installation](#docker-installation)
     - [Creating our First Image](#creating-our-first-image)
@@ -31,16 +32,16 @@ These are course notes I'm taking. I am using Ubuntu Xenial for development.
     - [Taking Control of Our Tags](#taking-control-of-our-tags)
     - [Pushing to DockerHub](#pushing-to-dockerhub)
 - [Integration and use Cases](#integration-and-use-cases)
-    - [Building a Web Farm for Development and Testing - Prerequisites](#building-a-web-farm-for-development-and-testing-prerequisites)
-    - [Building a Web Farm for Development and Testing - Part 1](#building-a-web-farm-for-development-and-testing-part-1)
-    - [Building a Web Farm for Development and Testing - Part 2](#building-a-web-farm-for-development-and-testing-part-2)
-    - [Building a Web Farm for Development and Testing - Part 3](#building-a-web-farm-for-development-and-testing-part-3)
-    - [Building a Web Farm for Development and Testing - Part 4](#building-a-web-farm-for-development-and-testing-part-4)
+    - [Building a Web Farm for Development and Testing - Prerequisites](#building-a-web-farm-for-development-and-testing---prerequisites)
+    - [Building a Web Farm for Development and Testing - Part 1](#building-a-web-farm-for-development-and-testing---part-1)
+    - [Building a Web Farm for Development and Testing - Part 2](#building-a-web-farm-for-development-and-testing---part-2)
+    - [Building a Web Farm for Development and Testing - Part 3](#building-a-web-farm-for-development-and-testing---part-3)
+    - [Building a Web Farm for Development and Testing - Part 4](#building-a-web-farm-for-development-and-testing---part-4)
     - [Integrating Custom Network in Your Docker Containers](#integrating-custom-network-in-your-docker-containers)
-    - [Testing Version Compatibility - Using Tomcat and Java - Prerequisites](#testing-versionccompatibility-using-tomcat-and-java-prerequisites)
-    - [Testing Version Compatibility - Using Tomcat and Java - Part 1](#testing-version-compatibility-using-tomcat-and-java-part-1)
-    - [Testing Version Compatibility - Using Tomcat and Java - Part 2](#testing-version-compatibility-using-tomcat-and-java-part-2)
-    - [Testing Version Compatibility - Using Tomcat and Java - Part 3](#testing-version-compatibility-using-tomcat-and-java-part-3)
+    - [Testing Version Compatibility - Using Tomcat and Java - Prerequisites](#testing-version-compatibility---using-tomcat-and-java---prerequisites)
+    - [Testing Version Compatibility - Using Tomcat and Java - Part 1](#testing-version-compatibility---using-tomcat-and-java---part-1)
+    - [Testing Version Compatibility - Using Tomcat and Java - Part 2](#testing-version-compatibility---using-tomcat-and-java---part-2)
+    - [Testing Version Compatibility - Using Tomcat and Java - Part 3](#testing-version-compatibility---using-tomcat-and-java---part-3)
 
 
 # Learning the Basics of Docker
@@ -110,6 +111,7 @@ docker pull ubuntu:trusty (Or any tag listed in dockerhub)
 ####Launch container
 (i = interactive, -t = attach to terminal)
 This will launch the container, but not keep it running once we exit
+
 ```
 docker run -it ubuntu:xenial /bin/bash
 ```
@@ -203,7 +205,7 @@ ls /root         ;(Our test.txt remains)
 ##Packaging a custom container
 [(Back to Top)](#table-of-contents)
 
-Instantiate
+Instantiate a Container and update some items
 ```
 docker ps -a
 docker run -it ubuntu:xenial /bin/bash
@@ -263,8 +265,9 @@ docker run -it ubuntu:xenial /bin/bash
 ```
 ps
 ```
-Processes (`ps`) are contained within the docker container, but the perfomance (`top`)
-shows the host system performance.
+
+- Processes (`ps`) are contained within the docker container,
+- Yet, the perfomance (`top`) shows the host system performance.
 
 ####See the logs from a container (Running or not running)
 ```
@@ -486,7 +489,7 @@ docker run centos7/entry:v1                               ; Outputs default CMD
 docker build -t centos7/apache:v1 .
 docker images
 
-# Run container as daemon so it doesn't exit and think it's done
+; Run container as daemon so it doesn't exit and think it's done
 
 docker run -d --name apacheweb1 centos7/apache:v1
 docker ps
@@ -571,8 +574,8 @@ for containers, so it may not always be the best for mass distribution.
 ##Docker Network: List and Inspect
 [(Back to Top)](#table-of-contents)
 
-You can see `docker0` which is a bridge default on `172.17.0.1` below, and it will
-grab an available IP from docker0:
+You can see `docker0` which is a bridge default on `172.17.0.1` below, and it will grab an available IP from docker0:
+
 ```
 ifconfig    ( look at docker0)
 ```
@@ -587,43 +590,9 @@ docker network ls --no-trunc
 ```
 
 Get Details about a network:
+
 ```
 docker network inspect bridge
-
-Outputs:
-```
-[
-    {
-        "Name": "bridge",
-        "Id": "f49ee9618b80a2423f7ff7725ab335129b59abc441731161b6a0f5db6dd67d80",
-        "Scope": "local",
-        "Driver": "bridge",
-        "EnableIPv6": false,
-        "IPAM": {
-            "Driver": "default",
-            "Options": null,
-            "Config": [
-                {
-                    "Subnet": "172.17.0.0/16",
-                    "Gateway": "172.17.0.1"
-                }
-            ]
-        },
-        "Internal": false,
-        "Containers": {
-            ...
-        },
-        "Options": {
-            "com.docker.network.bridge.default_bridge": "true",
-            "com.docker.network.bridge.enable_icc": "true",
-            "com.docker.network.bridge.enable_ip_masquerade": "true",
-            "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
-            "com.docker.network.bridge.name": "docker0",
-            "com.docker.network.driver.mtu": "1500"
-        },
-        "Labels": {}
-    }
-]
 ```
 
 ##Docker Network: Create and Remove
@@ -1096,7 +1065,7 @@ docker start 4f832af4d240
 docker attach 4f832af4d240
 vim ~/.bashrc
 
-Change:
+; Change to:
 service httpd start
 service shhd start
 
@@ -1104,8 +1073,10 @@ exit
 ```
 
 Resave the image
+```
 docker commit 4f832af4d240 centos6:baseweb
 docker run -it centos6:baseweb /bin/bash
+```
 
 ##Building a Web Farm for Development and Testing - Part 2
 [(Back to Top)](#table-of-contents)
@@ -1236,17 +1207,51 @@ Meh..
 ##Integrating Custom Network in Your Docker Containers
 [(Back to Top)](#table-of-contents)
 
+**This is not good to do on a VM, Bridging problems, I would skip this**
 
 It's import to **stop** docker daemon
 ```
 sudo service docker stop
 ```
 
-Modifying our Internal Network (10.10.100.1 Entry Point)
+Modifying our Internal Network (10.10.100.1 Entry Point).
+Below does not add it permanently, nor does it seem to work on Xenial even with sudo.
 ```
 ip link add br10 type bridge
 ip addr add 10.10.100.1/24 dev br10
 ip link set br10 up
+```
+
+Rather, you can add this to `sudo vim /etc/network/interface`:
+```
+auto br10
+iface br10 inet static
+    address 10.10.100.1
+    netmask 255.255.255.0
+    bridge_ports dummy0
+    bridge_stp off
+    bridge_fd 0
+```
+
+```
+sudo service networking restart
+; We'll probably have an error but it will be up
+ifconfig
+```
+
+Attach to interface bridge
+```
+sudo service docker start
+docker.io -d -b br10 &
+```
+
+**docker.io** is called this because it int
+
+In new terminal
+```
+docker run -it centos:centos6 /bin/bash
+ifconfig  ; 10.10.100.2 ~ IP Range
+ping 10.10.100.1  ~ See we can access the underlying network
 ```
 
 Misc Options
@@ -1261,15 +1266,61 @@ ip addr del 10.10.100.1/24 dev br10
 ip route show
 ```
 
+ apt-get install bridge-utils
+
 ##Testing Version Compatibility - Using Tomcat and Java - Prerequisites
 [(Back to Top)](#table-of-contents)
 
-Coming
+- Testing software against different versions.
+    - These are in a shell script in `downloads/getfiles.sh`
+    - Java7
+        - `wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/7u55-b13/jdk-7u55-linux-x64.tar.gz" -O jdk-7-linux-x64.tar.gz`
+    - Java8
+        - `wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.tar.gz" -O jdk-8-linux-x64.tar.gz`
+    - Apache Tomcat 7
+        - Download: `wget http://supergsego.com/apache/tomcat/tomcat-7/v7.0.70/bin/apache-tomcat-7.0.70.tar.gz`
+    - Apache Tomcat 8
+        - Download: `wget http://apache.cs.utah.edu/tomcat/tomcat-8/v8.5.5/bin/apache-tomcat-8.5.5.tar.gz`
+    - Make sure our application is compatible.
+        - Using a WAR file: `wget https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war`
 
 ##Testing Version Compatibility - Using Tomcat and Java - Part 1
 [(Back to Top)](#table-of-contents)
 
-Coming
+Get the Files for testing
+```
+cd docker/downloads
+./getfiles.sh
+```
+
+Attach a Volume and Update Base Image
+```
+docker run -it --name=jdk7 -v ~/docker-course/downloads:/root/Downloads centos:centos6 /bin/bash
+
+df -h
+cd /root/Downloads
+
+yum update
+yum install -y git wget sudo which
+```
+
+```
+mkdir tmp && cd tmp
+tar zxvf ../jdk-7*
+mv jdk1.7* /opt/java
+cd /opt/java
+alternatives --install /usr/bin/java java /opt/java/bin/java 2
+alternatives --config java
+<Enter>
+java version
+
+alternatives --install /usr/bin/jar jar /opt/java/bin/jar 2
+alternatives --install /usr/bin/java javac /opt/java/bin/javac 2
+alternatives --set jar /opt/java/bin/jar
+alternatives --set javac /opt/java/bin/javac
+
+; javac isn't working for me, weird.
+```
 
 ##Testing Version Compatibility - Using Tomcat and Java - Part 2
 [(Back to Top)](#table-of-contents)
