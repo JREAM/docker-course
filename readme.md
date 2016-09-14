@@ -921,7 +921,7 @@ These will all do the same thing:
 docker save centos:latest > centos.latest.tar
 docker save -o centos.latest.tar centos:latest
 docker save --output centos.latest.tar centos:latest
-``
+```
 
 #### More Compression
 ```
