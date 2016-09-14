@@ -1167,12 +1167,91 @@ http://localhost:8081
 ##Building a Web Farm for Development and Testing - Part 4
 [(Back to Top)](#table-of-contents)
 
-Coming
+```
+docker ps -a
+docker commit externalweb centos6:finalwebv1
+docker images
+```
+
+Not sure the point of this
+```
+cp -R dockerwww dockergit
+```
+
+Run in disconnected mode
+```
+; if needed:
+docker rm devweb1
+
+docker run -d -it --name=devweb1 -p 8081:80 -v ~/docker-course/docker/dockerwww:/var/www/html centos6:finalwebv1 /bin/bash
+
+docker run -d -it --name=devweb2 -p 8082:80 -v ~/docker-course/docker/dockerwww:/var/www/html centos6:finalwebv1 /bin/bash
+
+docker inspect devweb1 | grep IPAdd  ; 172.17.0.2
+docker inspect devweb2 | grep IPAdd  ; 172.17.0.3
+```
+
+#### Use Nginx to Proxy and Load Balance
+```
+apt-get install nginx
+sudo vim /etc/nginx/sites-enabled/default
+```
+
+Im installing locally, not a server, so Ill use 8888
+```
+upstream containerapp {
+    server 192.168.88.133:8081;
+    server 192.168.88.133:8082;
+}
+
+server {
+    listen *:8888;
+
+    server_name 192.168.88.133;
+    index index.html index.htm index.php;
+
+    access_log /var/log/nginx/localweb.log;
+    error_log /var/log/nginx/localerr.log;
+
+
+    location / {
+        proxy_pass http://containerapp;
+    }
+}
+```
+
+Restart nginx
+```
+sudo service nginx restart
+```
+
+In Browser
+```
+http://localhost:8888
+```
+
+Meh..
+
 
 ##Integrating Custom Network in Your Docker Containers
 [(Back to Top)](#table-of-contents)
 
-Coming
+
+It's import to **stop** docker daemon
+```
+sudo service docker stop
+```
+
+Modifying our Internal Network (10.10.100.1 Entry Point)
+```
+ip link add br10 type bridge
+ip addr add 10.10.100.1/24 dev br10
+ip link set br10 up
+
+To Remove:
+```
+ip addr del 10.10.100.1/24 dev br10
+```
 
 ##Testing Version Compatibility - Using Tomcat and Java - Prerequisites
 [(Back to Top)](#table-of-contents)
