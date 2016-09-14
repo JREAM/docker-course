@@ -1,5 +1,7 @@
 # Deep Dive into Docker
-These are course notes I'm taking. I am using Ubuntu Xenial for development.
+These are course notes I took. I am using Ubuntu 16 Xenial for development in VMWare WorkStation.
+
+- [Linux Academy: Docker Deep Dive](https://linuxacademy.com/devops/training/course/name/introduction-to-docker)
 
 # Table of Contents
 
@@ -1293,6 +1295,7 @@ cd docker/downloads
 ./getfiles.sh
 ```
 
+#### Setup Java7 Image
 Attach a Volume and Update Base Image
 ```
 docker run -it --name=jdk7 -v ~/docker-course/downloads:/root/Downloads centos:centos6 /bin/bash
@@ -1304,6 +1307,7 @@ yum update
 yum install -y git wget sudo which
 ```
 
+#### Setup Java7
 ```
 mkdir tmp && cd tmp
 tar zxvf ../jdk-7*
@@ -1320,6 +1324,50 @@ alternatives --set jar /opt/java/bin/jar
 alternatives --set javac /opt/java/bin/javac
 
 ; javac isn't working for me, weird.
+
+exit
+```
+
+Commit our base container
+```
+docker commit jdk7 centos6:java7
+```
+
+#### Setup Java8 Image
+Attach a Volume and Update Base Image
+```
+docker run -it --name=jdk8 -v ~/docker-course/downloads:/root/Downloads centos:centos6 /bin/bash
+
+df -h
+cd /root/Downloads
+
+yum update
+yum install -y git wget sudo which
+```
+
+#### Setup Java8
+```
+tar zxvf ../jdk-8*
+mv jdk1.8* /opt/java
+cd /opt/java
+alternatives --install /usr/bin/java java /opt/java/bin/java 2
+alternatives --config java
+<Enter>
+java -version
+
+alternatives --install /usr/bin/jar jar /opt/java/bin/jar 2
+alternatives --install /usr/bin/java javac /opt/java/bin/javac 2
+alternatives --set jar /opt/java/bin/jar
+alternatives --set javac /opt/java/bin/javac
+
+; javac isn't working for me, weird.
+
+exit
+```
+
+Commit our base container
+```
+docker commit jdk8 centos6:java8
 ```
 
 ##Testing Version Compatibility - Using Tomcat and Java - Part 2
