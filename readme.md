@@ -1,18 +1,18 @@
 # Deep Dive into Docker
-These are course notes I'm taking to remember things.
+These are course notes I'm taking. I am using Ubuntu Xenial for development.
 
 # Table of Contents
-- [Learning The Basics of Docker](#)
-    - [Introduction to Docker](#)
-    - [Containers Vs VirtualMachines](#)
-    - [Docker Architecture](#)
-    - [Docker Installation](#)
+- [Learning The Basics of Docker](#learning-the-basics-of-docker)
+    - [Introduction to Docker](#introduction-to-docker)
+    - [Containers vs VirtualMachines](#containers vs virtualmachines)
+    - [Docker Architecture](#docker-architecture)
+    - [Docker Installation](#docker-installation)
     - [Creating our First Image](#creating-our-first-image)
 - [The Dockerfile, Builds and Network Configuration](#the-dockerfile-builds-and-network-configuration)
     - [Dockerfile Directives: User and Run](#dockerfile-directives-user-and-run)
     - [Dockerfile Directives: RUN Order of Execution](#dockerfile-directives-run-order-of-execution)
     - [Dockerfile Directives: ENV](#dockerfile-directives-end)
-    - [Dockerfile Directives: CMD Vs Run](#dockerfile-directives-cmd-vs-run)
+    - [Dockerfile Directives: CMD vs Run](#dockerfile-directives-cmd-vs-run)
     - [Dockerfile Directives: ENTRYPOINT](#dockerfile-directives-entrypoint)
     - [Dockerfile Directives: EXPOSE](#dockerfile-directives-expose)
     - [Container Volume Management](#container-volume-management)
@@ -28,7 +28,7 @@ These are course notes I'm taking to remember things.
     - [Managing and Removing Base Images](#managing-and-removing-base-images)
     - [Saving and Loading Docker Images](#saving-and-loading-docker-images)
     - [Image History](#image-history)
-    - [Taking Control of Our Tags](#taking-control-of-our-tags)Pushing to DockerHub
+    - [Taking Control of Our Tags](#taking-control-of-our-tags)
     - [Pushing to DockerHub](#pushing-to-dockerhub)
 - [Integration and use Cases](#integration-and-use-cases)
     - [Building a Web Farm for Development and Testing - Prerequisites](#building-a-web-farm-for-development-and-testing-prerequisites)
@@ -48,9 +48,11 @@ These are course notes I'm taking to remember things.
 
 ##Introduction to Docker
 [(Back to Top)](#table-of-contents)
-Skip
+- `Images` are the templates to build containers on.
+    - Or one could base a custom image off a base image.
+- `Containers` are running instances of images.
 
-##Containers Vs VirtualMachines
+##Containers vs VirtualMachines
 [(Back to Top)](#table-of-contents)
 Skip
 
@@ -60,21 +62,20 @@ Skip
 
 ##Docker Installation
 [(Back to Top)](#table-of-contents)
-Skip
+```
+sudo apt-get install -y docker docker.io docker-engine
+```
 
 ##Creating our First Image
 [(Back to Top)](#table-of-contents)
 
-See our images
+First to see our images and check our docker version:
 ```
 docker images
-```
-Check Version
-```
 docker version
 ```
 
-Let's us know API version and google-go version for docker daemon.
+Let's us know API version and google-go version for Docker Daemon.
 ```
 docker info
 ```
@@ -96,7 +97,7 @@ What has run (With no name passed, it makes up a name)
 docker ps -a
 ```
 
-Refer to a Container by `CONTAINER_ID` or `NAME`
+We can refer to a Container or Image by `IMAGE ID`, `CONTAINER_ID` or either ones `NAME`
 
 ####Pull an image
 ```
@@ -356,7 +357,7 @@ elinks http://localhost:8080  (Its redirecting traffic from docker daemon)
 ##Dockerfile Directives: USER and RUN
 [(Back to Top)](#table-of-contents)
 
-Dir: `buids/01_RunAsUser`
+`Folder: buids/01_RunAsUser`
 ```
 docker pull centos:latest
 ```
@@ -389,15 +390,15 @@ docker exec -u 0 -it cocky_boyd /bin/bash
 ##Dockerfile Directives: RUN Order of Execution
 [(Back to Top)](#table-of-contents)
 
-Dir: `buids/02_CustomMessage`
+`Folder: buids/02_CustomMessage`
 
-- Order of Execution
+- **Order of Execution**
     - `FROM`
     - `MAINTAINER`
     - `RUN`
         - * _If you make a `USER` AFTER this, everything will run as THAT user_
 
-- Important
+- **Important**
     - `RUN`: execute at build time, becomes part of the base image.
     - `CMD`: Runs when a container is instantiated, eg: Run an application.
 
@@ -410,7 +411,7 @@ cat /etc/exports.list
 ##Dockerfile Directives: ENV
 [(Back to Top)](#table-of-contents)
 
-Dir: `buids/03_JavaInstall`
+`Folder: buids/03_JavaInstall`
 
 **When doing updates or installs always do `apt-get update -y` or `yum update -y`**
 
@@ -418,7 +419,7 @@ Dir: `buids/03_JavaInstall`
 Docker build -t centos7/java8:v1 .      (You'll see red, that's ok)
 ```
 
-Check the ENV is set for Java, though limited to one user
+Check the `ENV` is set for Java, though limited to one user
 ```
 docker images
 docker run -it centos7/java8:v1 /bin/bash
@@ -439,7 +440,7 @@ env     (Now we see JAVA_HOME global)
 ##Dockerfile Directives: CMD vs RUN
 [(Back to Top)](#table-of-contents)
 
-Dir: `buids/04_EchoServer`
+`Folder: buids/04_EchoServer`
 
 - Differences
     - `RUN`: execute at build time, becomes part of the **base image**.
@@ -454,7 +455,7 @@ docker run centos7/echo:v1  ; Should see an echo from the CMD
 ##Dockerfile Directives: ENTRYPOINT
 [(Back to Top)](#table-of-contents)
 
-Dir: `buids/05_Entry`
+`Folder: buids/05_Entry`
 
 Sets default application used everytime a container is created even if you ask it to do something else.
 
@@ -469,16 +470,16 @@ docker run centos7/entry:v1  /bin/bash echo "See me?"     ; No
 docker run centos7/entry:v1                               ; Outputs default CMD
 ```
 
-- Different between ENTRYPOINT and CMD
+- Difference between `ENTRYPOINT` and `CMD`
     - `ENTRYPOINT` - Runs no matter what
     - `CMD` - CAN be overwritten for a command, eg: in an echo example above
 
 ##Dockerfile Directives: EXPOSE
 [(Back to Top)](#table-of-contents)
 
-Dir: `buids/06_ApacheInstallation`
+`Folder: buids/06_ApacheInstallation`
 
-- Commands
+- **Commands**
     - `-P` is to run/remap any ports in the container
 
 ```
@@ -509,19 +510,19 @@ docker ps    (no ports exposed still)
 docker stop apacheweb2
 ```
 
-Manually Remap ports outside of dockerfile
+Manually Remap ports **outside** of `Dockerfile`
 ````
 docker run -d --name apacheweb3 -p 8080:80 centos7/apache:v1
 docker ps    (ports are exposed)
 elinks http://localhost:8080
 ```
 
-Dockerfile, add:
+In `Dockerfile`, add:
 ```
 EXPOSE 80
 ```
 
-Rebuild and check it out
+Rebuild and check!
 ```
 docker build -t centos7/apache:v1 .
 docker run -d --name apacheweb4 -P centos7/apache:v1
@@ -531,14 +532,14 @@ docker ps
 ##Container Volume Management
 [(Back to Top)](#table-of-contents)
 
-Dir: `buids/07_MyHostDir`
+`Folder: buids/07_MyHostDir`
 
 - Volumes:
     - Mounts
-    - File Systems
+    - File Systems (`FS`)
     - `-v` Flag
-        - 1: Create a mount outside containers FS, exposes whatever we put in there to underlying host,
-        - 3: Gives ability to provide direct access from host mount to container (eg vagrant, no NFS needed)
+        - 1: Create a mount outside containers `FS`, Exposes whatever we put in there to underlying host,
+        - 2: Gives ability to provide direct access from host mount to container (eg vagrant, no NFS needed)
 
 ```
 docker run -it --name voltest1 -v /mydata centos:latest /bin/bash
@@ -560,7 +561,7 @@ echo "this is from me 2" > host.txt
 
 Sync <local-path>:<container-path>
 ```
-docker run -it --name voltest2 -v ~/docker-course/builds/MyHostDir:/mydata centos:latest /bin/bash
+docker run -it --name voltest2 -v ~/docker-course/builds/07_MyHostDir:/mydata centos:latest /bin/bash
 ```
 
 You can use the `VOLUMES` directive in `Dockerfile`, but local files may not be available
@@ -636,7 +637,7 @@ Wrong:
 man docker network create (Does not work)
 ```
 
-Create a network with new subnet to use with a bridge for local adapters:
+Create a `network` with new subnet to use with a `bridge` for local adapters:
 
 __Most of the time you create subnets for locally routed interal items.__
 ```
@@ -664,10 +665,9 @@ docker network rm mybridge01
 ##Docker Network: Assign to Containers
 [(Back to Top)](#table-of-contents)
 
-Control how IP's are assigned to our containers.
+Control how IP's are assigned to our Containers.
 
-Class B network with subnet having large range of addresses, and tell the host
-only to assign IP's to containers from a subset range for that network.
+Class B network with subnet having large range of addresses, and tell the host only to assign IP's to containers from a subset range for that network.
 
 (About 190 IP's available)
 
