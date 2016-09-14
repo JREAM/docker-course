@@ -1,6 +1,7 @@
 # Deep Dive into Docker
 These are course notes I'm taking to remember things.
 
+# Table of Contents
 - [Learning The Basics of Docker](#)
     - [Introduction to Docker](#)
     - [Containers Vs VirtualMachines](#)
@@ -27,7 +28,7 @@ These are course notes I'm taking to remember things.
     - [Managing and Removing Base Images](#managing-and-removing-base-images)
     - [Saving and Loading Docker Images](#saving-and-loading-docker-images)
     - [Image History](#image-history)
-    - [Taking Control of Our Tags](#taking-control-of-our-tags)
+    - [Taking Control of Our Tags](#taking-control-of-our-tags)Pushing to DockerHub
     - [Pushing to DockerHub](#pushing-to-dockerhub)
 - [Integration and use Cases](#integration-and-use-cases)
     - [Building a Web Farm for Development and Testing - Prerequisites](#building-a-web-farm-for-development-and-testing-prerequisites)
@@ -45,19 +46,25 @@ These are course notes I'm taking to remember things.
 # Learning the Basics of Docker
 ---
 
-## Introduction to Docker
+##Introduction to Docker
+[(Back to Top)](#table-of-contents)
 Skip
 
-## Containers Vs VirtualMachines
+##Containers Vs VirtualMachines
+[(Back to Top)](#table-of-contents)
 Skip
 
-## Docker Architecture
+##Docker Architecture
+[(Back to Top)](#table-of-contents)
 Skip
 
-## Docker Installation
+##Docker Installation
+[(Back to Top)](#table-of-contents)
 Skip
 
-## Creating our First Image
+##Creating our First Image
+[(Back to Top)](#table-of-contents)
+
 See our images
 ```
 docker images
@@ -91,7 +98,7 @@ docker ps -a
 
 Refer to a Container by `CONTAINER_ID` or `NAME`
 
-#### Pull an image
+####Pull an image
 ```
 docker pull ubuntu (would be latest)
 docker pull ubuntu:trusty (Or any tag listed in dockerhub)
@@ -99,7 +106,7 @@ docker pull ubuntu:trusty (Or any tag listed in dockerhub)
 
 "Container Layers build the docker image"
 
-#### Launch container
+####Launch container
 (i = interactive, -t = attach to terminal)
 This will launch the container, but not keep it running once we exit
 ```
@@ -118,52 +125,52 @@ docker ps
 docker attach adoring_einstein  (Logs us in)
 ```
 
-#### Keep the container running in Background
+####Keep the container running in Background
 (disconnected/daemonized)
 
 ```
 docker run -itd ubuntu:xenial /bin/bash
 ```
 
-#### Run another Instance
+####Run another Instance
 
 ```
 docker run -itd ubuntu:xenial /bin/bash
 ```
 
-#### Info about the Base image
+####Info about the Base image
 ```
 docker inspect ubuntu:xenial
 docker ps  (See the different names)
 ```
 
-#### Info about Container
+####Info about Container
 ```
 docker ps -a
 docker inspect compassionate_bhaskara
 docker inspect compassionate_bhaskara | grep IP
 ```
 
-#### Going into container
+####Going into container
 
 ```
 docker attach compassionate_bhaskara
 <Enter>
 ```
 
-#### Stopping Containers
+####Stopping Containers
 ```
 docker stop <name>
 docker ps -a
 ```
 
-#### Searching for containers
+####Searching for containers
 ```
 docker search ruby
 docker search training/sinatra
 ```
 
-#### Instance Examples
+####Instance Examples
 ```
 docker pull training/sinatra
 docker run -it training/sinatra /bin/bash
@@ -171,20 +178,20 @@ gem
 gem list --local
 ```
 
-#### Create a file in this instance
+####Create a file in this instance
 ```
 cd /root
 echo "Testing" > test.txt
 exit
 ```
 
-#### Notice new instances don't have our old items
+####Notice new instances don't have our old items
 ```
 docker run -it training/sinatra /bin/bash
 ls /root
 ```
 
-#### We can reboot our old instance
+####We can reboot our old instance
 ```
 docker ps -a
 docker restart sad_bohr
@@ -192,7 +199,9 @@ docker attach sad_bohr
 ls /root         ;(Our test.txt remains)
 ```
 
-# Packaging a custom container
+##Packaging a custom container
+[(Back to Top)](#table-of-contents)
+
 Instantiate
 ```
 docker ps -a
@@ -221,7 +230,8 @@ docker images
 docker run -it imboyus/ubuntusshd:v1 /bin/bash
 ```
 
-#### Build a Dockerfile from box
+####Build a Dockerfile from box
+
 ```
 vim Dockerfile
 ```
@@ -241,7 +251,9 @@ docker images
 docker run -t imboyus/ubuntusshdonly:v2 /bin/bash
 ```
 
-# Running Container Commands with Docker
+##Running Container Commands with Docker
+[(Back to Top)](#table-of-contents)
+
 ```
 docker images
 docker run -it ubuntu:xenial /bin/bash
@@ -253,7 +265,7 @@ ps
 Processes (`ps`) are contained within the docker container, but the perfomance (`top`)
 shows the host system performance.
 
-#### See the logs from a container (Running or not running)
+####See the logs from a container (Running or not running)
 ```
 docker ps -a
 docker restart cocky_archimedes
@@ -261,7 +273,7 @@ docker ps
 docker logs cocky_archimedes
 ```
 
-#### Run commands on a running container
+####Run commands on a running container
 Exec only works on running containers nor will it auto-start it.
 ```
 docker exec cocky_archimedes /bin/cat /etc/profile
@@ -284,7 +296,7 @@ ps -a  (Notice this creates an instance, though not running)
 docker logs admiring_meitner
 ```
 
-#### Containerize
+####Containerize
 
 ```
 docker run -d ubuntu:xenial /bin/bash -c "while true; do echo  HELLO; sleep 1; done"
@@ -294,7 +306,9 @@ docker logs lonely_bose | wc -l
 docker stop lonely_bose
 ```
 
-# Exposing Container with Port Redirects
+##Exposing Container with Port Redirects
+[(Back to Top)](#table-of-contents)
+
 A port must be exposed to the underlying Host.
 
 ```
@@ -339,7 +353,9 @@ elinks http://localhost:8080  (Its redirecting traffic from docker daemon)
 # The Dockerfile, Builds and Network Configuration
 ---
 
-## Dockerfile Directives: USER and RUN
+##Dockerfile Directives: USER and RUN
+[(Back to Top)](#table-of-contents)
+
 Dir: `buids/01_RunAsUser`
 ```
 docker pull centos:latest
@@ -370,7 +386,9 @@ docker start cocky_boyd
 docker exec -u 0 -it cocky_boyd /bin/bash
 ```
 
-## Dockerfile Directives: RUN Order of Execution
+##Dockerfile Directives: RUN Order of Execution
+[(Back to Top)](#table-of-contents)
+
 Dir: `buids/02_CustomMessage`
 
 - Order of Execution
@@ -389,7 +407,9 @@ docker run -it centos7/config:v1 /bin/bash
 cat /etc/exports.list
 ```
 
-## Dockerfile Directives: ENV
+##Dockerfile Directives: ENV
+[(Back to Top)](#table-of-contents)
+
 Dir: `buids/03_JavaInstall`
 
 **When doing updates or installs always do `apt-get update -y` or `yum update -y`**
@@ -416,7 +436,9 @@ docker run -it centos7/java8:v2 /bin/bash
 env     (Now we see JAVA_HOME global)
 ```
 
-## Dockerfile Directives: CMD vs RUN
+##Dockerfile Directives: CMD vs RUN
+[(Back to Top)](#table-of-contents)
+
 Dir: `buids/04_EchoServer`
 
 - Differences
@@ -429,7 +451,9 @@ docker images
 docker run centos7/echo:v1  ; Should see an echo from the CMD
 ```
 
-## Dockerfile Directives: ENTRYPOINT
+##Dockerfile Directives: ENTRYPOINT
+[(Back to Top)](#table-of-contents)
+
 Dir: `buids/05_Entry`
 
 Sets default application used everytime a container is created even if you ask it to do something else.
@@ -449,7 +473,9 @@ docker run centos7/entry:v1                               ; Outputs default CMD
     - `ENTRYPOINT` - Runs no matter what
     - `CMD` - CAN be overwritten for a command, eg: in an echo example above
 
-## Dockerfile Directives: EXPOSE
+##Dockerfile Directives: EXPOSE
+[(Back to Top)](#table-of-contents)
+
 Dir: `buids/06_ApacheInstallation`
 
 - Commands
@@ -502,7 +528,9 @@ docker run -d --name apacheweb4 -P centos7/apache:v1
 docker ps
 ```
 
-## Container Volume Management
+##Container Volume Management
+[(Back to Top)](#table-of-contents)
+
 Dir: `buids/07_MyHostDir`
 
 - Volumes:
@@ -539,7 +567,8 @@ You can use the `VOLUMES` directive in `Dockerfile`, but local files may not be 
 for containers, so it may not always be the best for mass distribution.
 
 
-## Docker Network: List and Inspect
+##Docker Network: List and Inspect
+[(Back to Top)](#table-of-contents)
 
 You can see `docker0` which is a bridge default on `172.17.0.1` below, and it will
 grab an available IP from docker0:
@@ -596,7 +625,9 @@ Outputs:
 ]
 ```
 
-## Docker Network: Create and Remove
+##Docker Network: Create and Remove
+[(Back to Top)](#table-of-contents)
+
 ```
 Right:
 man docker-network-create (Use this)
@@ -630,7 +661,8 @@ docker network inspect mybridge01
 docker network rm mybridge01
 ```
 
-## Docker Network: Assign to Containers
+##Docker Network: Assign to Containers
+[(Back to Top)](#table-of-contents)
 
 Control how IP's are assigned to our containers.
 
@@ -690,7 +722,9 @@ a static IP.
 # Docker Commands and Structures
 ---
 
-## Inspect Container Processes
+##Inspect Container Processes
+[(Back to Top)](#table-of-contents)
+
 A one time view of what's in top:
 ```
 docker top compassionate_cori
@@ -707,7 +741,9 @@ With two terminals we can monitor in real-time:
 docker stats compassionate_cori
 ```
 
-## Previous Container Management
+##Previous Container Management
+[(Back to Top)](#table-of-contents)
+
 See only the ID's of containers
 ```
 docker ps -a -q
@@ -717,7 +753,7 @@ See how many images there are
 ```
 docker ps -a -q  | wc -l
 ```
-#### Remove a running container
+####Remove a running container
 ```
 docker run zen_goldberg
 docker ps
@@ -727,13 +763,13 @@ docker exec zen_goldberg /bin/cat /etc/profile
 docker rm -f zen_goldberg
 ```
 
-#### Remove all containers that have run
+####Remove all containers that have run
 There is no command to remove all docker containers.  Yet, we can do this:
 ```
 docker rm `sudo docker ps -a -q`
 ```
 
-#### Stop Docker and Remove Container files
+####Stop Docker and Remove Container files
 ```
 sudo systemctl stop docker
 cd /var/lib/docker/containers
@@ -744,7 +780,9 @@ sudo systemctl restart docker
 When the hash folder (`config`) is missing for an existing package docker won't run it.
 
 
-## Controlling Port Exposure on Containers
+##Controlling Port Exposure on Containers
+[(Back to Top)](#table-of-contents)
+
 Run in disconnected mode
 ```
 docker run -itd nginx:latest
@@ -798,7 +836,9 @@ Bind to UDP only option (TCP Default)
 docker run -itd -p 127.0.0.1:8081:80/udp nginx:latest
 ```
 
-## Naming our Containers
+##Naming our Containers
+[(Back to Top)](#table-of-contents)
+
 Rather than let docker daemon make `container names` we can control them nicer.
 
 - Image names are always lowercase
@@ -810,7 +850,7 @@ docker run -itd --name mycontainername ubuntu:xenial /bin/bash
 docker ps
 ```
 
-#### Rename a Previously run container
+####Rename a Previously run container
 ```
 docker ps -a
 docker rename trusting_volhard myrenamedcontainer
@@ -819,14 +859,16 @@ docker rename <hash-id> newnamehere
 
 You cannot change the `container id`, nor should you want to.
 
-#### Rename running containers
+####Rename running containers
 ```
 docker ps
 docker rename lonely_colden superman
 docker ps
 ```
 
-## Docker Events
+##Docker Events
+[(Back to Top)](#table-of-contents)
+
 Have three terminals open.
 ```
 docker run -itd --name c1 ubuntu:xenial /bin/bash
@@ -834,7 +876,7 @@ docker run -itd --name c2 ubuntu:xenial /bin/bash
 docker run -itd --name c3 ubuntu:xenial /bin/bash
 ```
 
-#### See Events and Listen
+####See Events and Listen
 In another terminal run
 ```
 docker events --since '1h'
@@ -856,7 +898,7 @@ docker attach c1
 exit        (See log terminal)
 ```
 
-#### Filters
+####Filters
 
 ```
 docker events -f   (shorthand)
@@ -868,7 +910,7 @@ docker events --filter event=attach
 docker attach c3    (See log terminal)
 ```
 
-#### Multiple Filters
+####Multiple Filters
 Note: exiting `-it` mode will cause a die event.
 ```
 docker events --filter event=attach --filter event=die --filter event=stop
@@ -876,7 +918,9 @@ docker events --filter event=attach --filter event=die --filter event=stop
 docker stop c3
 ```
 
-## Managing and Removing Base Images
+##Managing and Removing Base Images
+[(Back to Top)](#table-of-contents)
+
 If you have a container which based upon a base image,
 it will have a conflict and you should remove the container first.
 ```
@@ -900,7 +944,9 @@ If a container has multiple references with the same Repository, you must use `-
 docker rmi -f centos7/java8
 ```
 
-## Saving and Loading Docker Images
+##Saving and Loading Docker Images
+[(Back to Top)](#table-of-contents)
+
 We can tar a file and save it, and load it later without having to back it up to a repository
 
 ```
@@ -910,7 +956,7 @@ exit
 docker ps -a           (Find the last run container at top)
 ```
 
-#### Save an Image to File
+####Save an Image to File
 ```
 docker commit romantic_mestorf centos:mine
 docker rm romantic_mestorf
@@ -923,7 +969,7 @@ docker save -o centos.latest.tar centos:latest
 docker save --output centos.latest.tar centos:latest
 ```
 
-#### More Compression
+####More Compression
 ```
 tar tvf centos.latest.tar
 
@@ -931,14 +977,16 @@ tar tvf centos.latest.tar
 gzip centos.latest.tar  (200mb to 70mb)
 ```
 
-#### Load the Saved File
+####Load the Saved File
 Restore the image
 ```
 docker load --input centos.latest.tar.gz
 docker images
 ```
 
-## Image History
+##Image History
+[(Back to Top)](#table-of-contents)
+
 Let's us see the details of the build, only available on images and not containers.
 ```
 docker history centos:mine
@@ -947,14 +995,17 @@ docker history --quiet nginx
 docker history --quiet --no-trunc nginx
 ```
 
-## Taking Control of Our Tags
+##Taking Control of Our Tags
+[(Back to Top)](#table-of-contents)
+
 Tagging an Image will share the same Image ID.
 ```
 docker tag 4efb2fcdb1ab mine/centos:v1.0
 docker tag mine/centos:v1.0 imboyus.server/centos:v1.0.1b
 ```
 
-## Pushing to DockerHub
+##Pushing to DockerHub
+[(Back to Top)](#table-of-contents)
 
 - Head over to [DockerHub](http://dockerhub.com)
 - Has same naming conventions as Git, eg (jream/name)
@@ -980,7 +1031,7 @@ docker rmi jream/myubuntu
 docker pull jream/myubuntu
 ```
 
-#### Shorthand Login
+####Shorthand Login
 ```
 docker login -u="user" -p="12345"
 docker login --user="user" --password="12345"
@@ -992,7 +1043,8 @@ docker login --user="user" --password="12345" http://optional.server
 # Integration and use Cases
 ---
 
-## Building a Web Farm for Development and Testing - Prerequisites
+##Building a Web Farm for Development and Testing - Prerequisites
+[(Back to Top)](#table-of-contents)
 
 - Working Locally
 - Git
@@ -1001,31 +1053,49 @@ docker login --user="user" --password="12345" http://optional.server
 - Nginx Proxy Load Balancer on Multiple Nodes
 - Host Multiple Domains over Multiple Ports
 
-## Building a Web Farm for Development and Testing - Part 1
+##Building a Web Farm for Development and Testing - Part 1
+[(Back to Top)](#table-of-contents)
+
 Coming
 
-## Building a Web Farm for Development and Testing - Part 2
+##Building a Web Farm for Development and Testing - Part 2
+[(Back to Top)](#table-of-contents)
+
 Coming
 
-## Building a Web Farm for Development and Testing - Part 3
+##Building a Web Farm for Development and Testing - Part 3
+[(Back to Top)](#table-of-contents)
+
 Coming
 
-## Building a Web Farm for Development and Testing - Part 4
+##Building a Web Farm for Development and Testing - Part 4
+[(Back to Top)](#table-of-contents)
+
 Coming
 
-## Integrating Custom Network in Your Docker Containers
+##Integrating Custom Network in Your Docker Containers
+[(Back to Top)](#table-of-contents)
+
 Coming
 
-## Testing Version Compatibility - Using Tomcat and Java - Prerequisites
+##Testing Version Compatibility - Using Tomcat and Java - Prerequisites
+[(Back to Top)](#table-of-contents)
+
 Coming
 
-## Testing Version Compatibility - Using Tomcat and Java - Part 1
+##Testing Version Compatibility - Using Tomcat and Java - Part 1
+[(Back to Top)](#table-of-contents)
+
 Coming
 
-## Testing Version Compatibility - Using Tomcat and Java - Part 2
+##Testing Version Compatibility - Using Tomcat and Java - Part 2
+[(Back to Top)](#table-of-contents)
+
 Coming
 
-## Testing Version Compatibility - Using Tomcat and Java - Part 3
+##Testing Version Compatibility - Using Tomcat and Java - Part 3
+[(Back to Top)](#table-of-contents)
+
 Coming
 
 
